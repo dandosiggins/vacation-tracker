@@ -140,6 +140,10 @@
               data: { subscription },
             } = supabase.auth.onAuthStateChange((_event, session) => {
               setSession(session);
+              // Clear hash from URL after authentication
+              if (session && window.location.hash) {
+                window.history.replaceState(null, '', window.location.pathname);
+              }
             });
 
             return () => subscription.unsubscribe();
