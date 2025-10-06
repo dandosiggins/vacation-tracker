@@ -180,9 +180,10 @@
         const List = ({size, className}) => <span className={className} style={{fontSize: size}}>📋</span>;
         const CalendarDays = ({size, className}) => <span className={className} style={{fontSize: size}}>📆</span>;
 
-        function VacationTracker() {
+        function VacationTracker({ session }) {
           const HOURS_PER_DAY = 7.75;
           const currentYear = new Date().getFullYear();
+          const USER_ID = session.user.id;
           
           const [selectedYear, setSelectedYear] = useState(currentYear);
           const [viewMode, setViewMode] = useState('list');
@@ -200,8 +201,10 @@
 
           // Load data from Supabase when component mounts or year changes
           useEffect(() => {
-            loadYearData(selectedYear);
-          }, [selectedYear]);
+            if (USER_ID) {
+              loadYearData(selectedYear);
+            }
+          }, [selectedYear, USER_ID]);
 
           const loadYearData = async (year) => {
             setLoading(true);
@@ -469,6 +472,14 @@
                           <ChevronRight size={20} />
                         </button>
                       </div>
+                      <button
+                        onClick={async () => {
+                          await supabase.auth.signOut();
+                        }}
+                        className="px-3 py-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg text-sm font-medium transition"
+                      >
+                        Logout
+                      </button>
                     </div>
                   </div>
 
@@ -762,7 +773,7 @@
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<VacationTracker />);
+        root.render(<App />);
     </script>
 </body>
 </html>
